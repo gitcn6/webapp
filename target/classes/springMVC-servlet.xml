@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:mvc="http://www.springframework.org/schema/mvc"
+    xmlns:context="http://www.springframework.org/schema/context" xmlns:p="http://www.springframework.org/schema/p"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans
+    	http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/mvc
+        http://www.springframework.org/schema/mvc/spring-mvc.xsd
+        http://www.springframework.org/schema/context
+        http://www.springframework.org/schema/context/spring-context.xsd">
+    
+    <!-- 使用Annotation自动注册Bean,只扫描@controller -->
+    <context:component-scan base-package="com.unicom" use-default-filters="false">
+    	<context:include-filter type="annotation" expression="org.springframework.stereotype.Controller"/>
+    </context:component-scan> 
+    
+    <context:property-placeholder location="classpath:app.properties"/>
+    
+    <!-- 启用springmvc注解 @requestMapping生效 
+    会自动向子容器中注入RequestMappingHandlerMapping RequestMappingHandlerAdapter -->
+<!-- 	<mvc:annotation-driven /> -->
+	
+	<bean id="log" class="com.unicom.busi.interceptor.logInterceptor"/>
+	
+	<!-- 处理@requestMapping注解,将其注册到请求映射表中 -->
+	<bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping">
+		<!-- 添加拦截器 -->
+		<property name="interceptors">
+			<list>
+				<ref bean="log"/>
+			</list>
+		</property>
+	</bean>
+	
+	<!-- 对静态资源文件的访问，将无法映射到controller的path交给default servlet handler 处理 -->
+<!-- 	<mvc:default-servlet-handler/> -->
+	
+	<!-- 静态资源映射 -->
+   	<mvc:resources location="/WEB-INF/resource/" mapping="/resource/**"></mvc:resources>
+   	
+   	<!-- 视图解析 -->
+   	<!-- <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+   		<property name="viewClass" value="org.springframework.web.servlet.view.JstlView"/>
+	    <property name="prefix" value="/WEB-INF/jsp/"/>
+	    <property name="suffix" value=".jsp"/>
+   	</bean> -->
+   	
+   	<bean class="org.springframework.web.servlet.view.InternalResourceViewResolver" p:prefix="/WEB-INF/jsp/" p:suffix=".jsp"/>
+
+	
+	<bean id="stringHttpMessageConverter" class="org.springframework.http.converter.StringHttpMessageConverter">
+		<property name="supportedMediaTypes">
+			<list>
+				<value>text/html;charset=UTF-8</value>
+				<value>application/json;charset=UTF-8</value>
+			</list>
+		</property>
+	</bean>
+	<!-- 对象json互转 -->
+	<bean id="mappingJackson2HttpMessageConverter" class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter">
+		<property name="supportedMediaTypes">
+			<list>
+				<value>application/json;charset=UTF-8</value>
+				<value>text/html;charset=UTF-8</value>
+			</list>
+		</property>
+	</bean>
+	
+	<!-- 处理请求的适配器,说白了,就是确定调用哪个类的哪个方法,并且构造方法参数,返回值 -->
+	<bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter">
+		<property name="messageConverters">
+			<list>
+				<ref bean="mappingJackson2HttpMessageConverter"/>
+			</list>
+		</property>
+	</bean>
+	
+	<!-- 文件上传 需要使用到的配置 -->
+	<bean class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+		<property name="maxUploadSize" value="1046666000"/>
+	</bean>
+	
+	<!-- 开启shiro注解  AOP式方法级权限检查  --> 
+    <bean class="org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator" depends-on="lifecycleBeanPostProcessor"/>
+    <bean class="org.apache.shiro.spring.security.interceptor.AuthorizationAttributeSourceAdvisor">  
+      <property name="securityManager" ref="securityManager"/>  
+    </bean>
+    
+    <!-- 处理shiro的注解抛出的异常  -->
+    <bean class="org.springframework.web.servlet.handler.SimpleMappingExceptionResolver">
+    	<property name="exceptionMappings">
+    		<props>
+    			<prop key="org.apache.shiro.authz.UnauthorizedException">
+    				unauthorized
+    			</prop>
+    		</props>
+    	</property>
+    </bean>
+        
+</beans>

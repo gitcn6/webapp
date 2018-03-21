@@ -1,0 +1,15 @@
+eclipse.preferences.version=1
+encoding//src/main/java/com/unicom/busi/base/AppConfig.java=UTF-8
+encoding//src/main/java/com/unicom/busi/base/SpringExceptionHandler.java=UTF-8
+encoding//src/main/java/com/unicom/busi/controller/InitController.java=UTF-8
+encoding//src/main/java/com/unicom/busi/controller/TokenController.java=UTF-8
+encoding//src/main/java/com/unicom/busi/entity/TaskDemo.java=UTF-8
+encoding//src/main/java/com/unicom/busi/interceptor/AspectDemo.java=UTF-8
+encoding//src/main/java/com/unicom/busi/interceptor/logInterceptor.java=UTF-8
+encoding//src/main/java/com/unicom/busi/realm/MyRealm.java=UTF-8
+encoding//src/main/java/com/unicom/busi/ws/WsServiceImpl.java=UTF-8
+encoding//src/main/java/com/unicom/common/util/Base64Util.java=UTF-8
+encoding//src/main/java/com/unicom/common/util/ShiroTest.java=UTF-8
+encoding//src/main/resources/app.properties=UTF-8
+encoding//src/main/resources/log4j.properties=UTF-8
+encoding/<project>=UTF-8

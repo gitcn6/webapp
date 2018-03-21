@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:aop="http://www.springframework.org/schema/aop"
+    xmlns:context="http://www.springframework.org/schema/context" xmlns:tx="http://www.springframework.org/schema/tx"
+    xmlns:tool="http://www.springframework.org/schema/tool" xmlns:task="http://www.springframework.org/schema/task"
+    xmlns:util="http://www.springframework.org/schema/util" xmlns:cache="http://www.springframework.org/schema/cache"
+    xmlns:jaxws="http://cxf.apache.org/jaxws"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans
+    	http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/aop
+        http://www.springframework.org/schema/aop/spring-aop.xsd
+        http://www.springframework.org/schema/context
+        http://www.springframework.org/schema/context/spring-context.xsd
+        http://www.springframework.org/schema/tx
+        http://www.springframework.org/schema/tx/spring-tx.xsd
+        http://www.springframework.org/schema/task
+        http://www.springframework.org/schema/task/spring-task.xsd
+        http://www.springframework.org/schema/util
+        http://www.springframework.org/schema/util/spring-util.xsd
+        http://www.springframework.org/schema/cache
+        http://www.springframework.org/schema/cache/spring-cache.xsd
+        http://cxf.apache.org/jaxws http://cxf.apache.org/schemas/jaxws.xsd">
+    
+    <!-- 加载配置文件 方式一 -->    
+<!-- 	<context:property-placeholder location="classpath:app.properties"/> -->
+	<!-- 加载配置文件 方式二 -->
+	<bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+		<property name="locations">
+			<array>
+				<value>classpath:app.properties</value>
+			</array>
+		</property>
+	</bean>
+	
+	<!-- 使用Annotation自动注册Bean,不扫描@controller -->
+	<context:component-scan base-package="com.unicom">
+		<context:exclude-filter type="annotation" expression="org.springframework.stereotype.Controller"/>
+	</context:component-scan>
+
+	<!-- druid数据源配置 -->
+	<bean id="dataSource" class="com.alibaba.druid.pool.DruidDataSource" init-method="init" destroy-method="close">
+<!-- 		基本属性 url、user、password   -->
+	    <property name="url" value="${jdbc.url}" />  
+	    <property name="username" value="${jdbc.username}" />  
+	    <property name="password" value="${jdbc.password}" />  
+	        
+<!-- 	    配置初始化大小、最大   -->
+	    <property name="initialSize" value="${jdbc.dataSource.initialSize}" />  
+	    <property name="maxActive" value="${jdbc.dataSource.maxActive}" />  
+	   
+<!-- 	    配置获取连接等待超时的时间   -->
+	    <property name="maxWait" value="60000" />  
+	   
+<!-- 	    配置间隔多久才进行一次检测，检测需要关闭的空闲连接，单位是毫秒   -->
+	    <property name="timeBetweenEvictionRunsMillis" value="60000" />  
+	   
+<!-- 	    配置一个连接在池中最小生存的时间，单位是毫秒   -->
+	    <property name="minEvictableIdleTimeMillis" value="300000" />  
+	    
+	    <property name="validationQuery" value="SELECT 'x'" />  
+	    <property name="testWhileIdle" value="true" />  
+	    <property name="testOnBorrow" value="false" />  
+	    <property name="testOnReturn" value="false" />  
+	   
+<!-- 	    打开PSCache，并且指定每个连接上PSCache的大小   -->
+	    <property name="poolPreparedStatements" value="true" />  
+	    <property name="maxPoolPreparedStatementPerConnectionSize" value="20" />  
+	   
+<!-- 	    配置监控统计拦截的filters，去掉后监控界面sql无法统计   -->
+	    <property name="filters" value="stat" />  
+	</bean>
+	
+	<!-- 配置jdbcTemplate -->
+	<bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
+		<property name="dataSource" ref="dataSource"/>
+	</bean>
+	
+	<bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource" ref="dataSource"/>
+	</bean>
+	
+	<!-- 开启事务注解 -->
+	<tx:annotation-driven/>
+	
+	<!-- 事务通知 -->
+	<tx:advice id="txAdvice" transaction-manager="transactionManager">
+		<tx:attributes>
+			<tx:method name="insert*" propagation="REQUIRED" read-only="false" rollback-for="Exception"/>
+			<tx:method name="add*" rollback-for="Exception"/>
+			<tx:method name="save*" rollback-for="Exception"/>
+			<tx:method name="modify*" rollback-for="Exception"/>
+			<tx:method name="update*" rollback-for="Exception"/>
+			<tx:method name="del*" rollback-for="Exception"/>
+			<tx:method name="get*" read-only="true"/>
+		</tx:attributes>
+	</tx:advice>
+	
+	<aop:config>
+		<!-- 切入点 -->
+		<aop:pointcut expression="execution(* com.unicom..service..*.*(..))" id="txMethod"/>
+		<aop:advisor advice-ref="txAdvice" pointcut-ref="txMethod"/>
+		
+		<!-- 配置切面 -->
+		<!-- <aop:aspect ref="aspectDemo">
+			<aop:pointcut expression="execution(* com.unicom..service..*.*(..))" id="service"/>
+			<aop:before method="beforeAction" pointcut-ref="service"/>
+		</aop:aspect> -->
+	</aop:config>
+	
+	<!-- 自动为spring容器中那些配置@aspectj切面的bean创建代理,织入切面 -->
+	<aop:aspectj-autoproxy proxy-target-class="true"/>
+	
+	<!-- 调度配置 开启定时任务-->
+	<task:scheduler id="scheduler" pool-size="5"/>
+	<!-- 线程池容量:core-size=5  max-size=10  缓存队列容量 20 -->
+	<task:executor id="executor" pool-size="5-10" queue-capacity="20"/>
+	
+	<task:scheduled-tasks scheduler="scheduler">
+		<task:scheduled ref="taskDemo" method="exeTask" cron="0 17 15 * * ?"/>
+	</task:scheduled-tasks>
+	
+	<!-- 开启 异步调用@async 与 调度@scheduled 的注解支持 -->
+	<task:annotation-driven executor="executor" scheduler="scheduler"/>
+	
+	<!-- mybatis配置 -->
+	<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+	  <property name="dataSource" ref="dataSource" />
+	  <property name="configLocation" value="classpath:mybatis-config.xml"/>
+	  <property name="mapperLocations" value="classpath*:com/unicom/busi/dao/**/*.xml" />
+	</bean>
+	
+	<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+	  <property name="basePackage" value="com.unicom.busi.dao.mapper" />
+	</bean>
+	
+	<bean id="wsService" class="com.unicom.busi.ws.WsServiceImpl"/>
+	<!-- webservice配置 -->
+	<jaxws:server id="helloService" address="/helloService">
+		<jaxws:serviceBean>
+			<ref bean="wsService"/>
+		</jaxws:serviceBean>
+		<jaxws:inInterceptors>
+			<bean class="org.apache.cxf.interceptor.LoggingInInterceptor"/>
+		</jaxws:inInterceptors>
+		<jaxws:outInterceptors>
+			<bean class="org.apache.cxf.interceptor.LoggingOutInterceptor"/>
+		</jaxws:outInterceptors>
+	</jaxws:server>
+	
+	<!-- 缓存配置 -->
+<!-- 	<cache:annotation-driven /> -->
+	<!-- spring内置缓存 -->
+	<!-- <bean id="simpleCacheManager" class="org.springframework.cache.support.SimpleCacheManager">
+		<property name="caches">
+			<set>
+				<bean class="org.springframework.cache.concurrent.ConcurrentMapCacheFactoryBean">
+                    <property name="name" value="default"/>
+                </bean>
+                <bean class="org.springframework.cache.concurrent.ConcurrentMapCacheFactoryBean">
+                    <property name="name" value="userCache"/>
+                </bean>
+			</set>
+		</property>
+	</bean> -->
+	<!-- <bean id="cacheManagerFactory" class="org.springframework.cache.ehcache.EhCacheManagerFactoryBean">
+		<property name="configLocation" value="classpath:ehcache.xml"/>
+	</bean>
+	<bean id="cacheManager1" class="org.springframework.cache.ehcache.EhCacheCacheManager">      
+        <property name="cacheManager"  ref="cacheManagerFactory"/>      
+    </bean>
+	<bean id="cacheManager" class="org.springframework.cache.support.CompositeCacheManager">
+		<property name="cacheManagers">
+			<list>
+				<ref bean="cacheManager1"/>
+			</list>
+		</property>
+		作用：找不到缓存就不做任何缓存操作
+		<property name="fallbackToNoOpCache" value="true"/>
+	</bean> -->
+	
+	
+</beans>
