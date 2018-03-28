@@ -14,10 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -75,7 +72,7 @@ public class InitController {
 		return "success";
 	}
 	
-	@RequestMapping("/login")
+	@RequestMapping(value = "/login",method = RequestMethod.POST)
 	public String login(@RequestParam String username,@RequestParam String password){
 		UsernamePasswordToken token = new UsernamePasswordToken(username, password);
 		Subject subject = SecurityUtils.getSubject();
@@ -84,7 +81,8 @@ public class InitController {
 		} catch (AuthenticationException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-			return "test";
+			//认证失败返回到登陆页面
+			return "login";
 		}
 		return "main";
 	}
@@ -99,7 +97,7 @@ public class InitController {
 	
 	@RequestMapping("/unauthorized")
 	public String unauthorized(){
-		
+
 		return "unauthorized";
 	}
 	
@@ -117,6 +115,16 @@ public class InitController {
 			e.printStackTrace();
 		}
 		return "main";
+	}
+
+	@GetMapping("/signin")
+	public String index(){
+		Subject subject = SecurityUtils.getSubject();
+		if(subject.isAuthenticated()){
+			return "main";
+		}else{
+			return "login";
+		}
 	}
 	
 }

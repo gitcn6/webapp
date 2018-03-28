@@ -14,6 +14,8 @@ import com.unicom.busi.dao.mapper.SysUserMapper;
 import com.unicom.busi.entity.SysUser;
 import com.unicom.busi.service.UserService;
 
+import java.util.List;
+
 @Service
 //@CacheConfig(cacheNames="userCache")
 public class UserServiceImpl implements UserService{
@@ -72,6 +74,11 @@ public class UserServiceImpl implements UserService{
 		SysUser user = um.getUserByName(username);
 		return user;
 	}
-	
+
+	@Override
+	public List<SysUser> getUsersByName(String username) {
+		return um.getUsersByName(username);
+	}
+
 
 }

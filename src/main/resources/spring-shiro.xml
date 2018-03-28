@@ -9,7 +9,7 @@
   </bean>
   
   
-  <!-- 凭证匹配器，用来将从数据库中取出的用户的凭证信息与从前台出入的凭证信息进行比对  -->
+  <!-- 凭证匹配器，用来将从数据库中取出的用户的凭证信息与从前台传入的凭证信息进行比对  -->
   <bean id="hashedCredentialsMatcher" class="org.apache.shiro.authc.credential.HashedCredentialsMatcher">
   	<!-- 加密使用的散列算法 -->
   	<property name="hashAlgorithmName" value="MD5"/>
@@ -27,12 +27,15 @@
   
   <bean id="shiroFilter" class="org.apache.shiro.spring.web.ShiroFilterFactoryBean">
   	<property name="securityManager" ref="securityManager"/>
-  	<property name="loginUrl" value="/frm/init/login"/>
+  	<property name="loginUrl" value="/frm/init/signin"/>
   	<property name="unauthorizedUrl" value="/frm/init/unauthorized"/>
   	<property name="filterChainDefinitions">
   		<value>
   			<!-- /frm/init/logout=logout 不需要配置，配置之后不走控制层中的logout方法 -->
-  			/frm/init/**=authc
+            /frm/init/signin=authc
+			/frm/init/login=anon
+			/frm/resource/**=anon
+			/frm/**=authc
   		</value>
   	</property>
   </bean>

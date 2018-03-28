@@ -2,6 +2,8 @@ package com.unicom.busi.service;
 
 import com.unicom.busi.entity.SysUser;
 
+import java.util.List;
+
 public interface UserService {
 
 	SysUser getUserById(int id);
@@ -13,5 +15,7 @@ public interface UserService {
 	SysUser update(SysUser user);
 
 	SysUser getUserByName(String username);
+
+	List<SysUser> getUsersByName(String username);
 
 }

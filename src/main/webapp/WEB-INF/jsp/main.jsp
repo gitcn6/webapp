@@ -1,12 +1,47 @@
 <%@ page language="java" contentType="text/html; charset=utf-8"
     pageEncoding="utf-8"%>
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!DOCTYPE html>
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-<title>Insert title here</title>
+	<%@include file="common/common.jsp"%>
+	<script type="text/javascript" src="${pageContext.request.contextPath}/frm/resource/js/login.js"></script>
+	<title>Insert title here</title>
+	<style type="text/css">
+		#main_content{
+			border: 1px solid #fff;
+			height: 500px;
+			box-shadow: 2px 2px 5px #c5c5c5;
+		}
+	</style>
 </head>
-<body>
-	公司名称：
+<body style="background-color: #ebebeb;">
+<nav class="navbar navbar-inverse" role="navigation" style="border-radius: 0px;margin-bottom: 35px;">
+	<div class="container-fluid">
+	<div class="navbar-header">
+		<a class="navbar-brand" href="#">通用框架</a>
+	</div>
+	<div>
+		<ul class="nav navbar-nav">
+			<li class="active"><a href="#">合同管理</a></li>
+			<li><a href="#">订单管理</a></li>
+			<li class="dropdown">
+				<a href="#" class="dropdown-toggle" data-toggle="dropdown">
+					系统管理 <b class="caret"></b>
+				</a>
+				<ul class="dropdown-menu">
+					<li><a href="#" onclick="addContent('/webapp/frm/user/toIndex')">用户管理</a></li>
+					<li><a href="#">角色管理</a></li>
+					<li><a href="#">权限管理</a></li>
+					<li><a href="#">用户角色管理</a></li>
+					<li><a href="#">角色权限管理</a></li>
+				</ul>
+			</li>
+		</ul>
+	</div>
+	</div>
+</nav>
+<div class="col-md-10 col-md-offset-1">
+	<iframe id="main_content" src="${pageContext.request.contextPath}/frm/user/toIndex" width="100%"></iframe>
+</div>
 </body>
 </html>

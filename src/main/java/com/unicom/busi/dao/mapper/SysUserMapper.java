@@ -1,8 +1,8 @@
 package com.unicom.busi.dao.mapper;
 
-import java.util.List;
-
 import com.unicom.busi.entity.SysUser;
+
+import java.util.List;
 
 public interface SysUserMapper {
     /**
@@ -46,4 +46,6 @@ public interface SysUserMapper {
      * @mbg.generated Mon May 15 13:13:19 CST 2017
      */
     int updateByPrimaryKey(SysUser record);
+
+    List<SysUser> getUsersByName(String username);
 }
