@@ -66,12 +66,12 @@
     where name = #{username}
   </select>
 
-  <select id="getUsersByName" parameterType="java.lang.String" resultType="java.util.List">
+  <select id="getUsersByName" parameterType="java.lang.String" resultMap="BaseResultMap">
     select id, age, name, mail_addr
     from sys_user
     where 1=1
-    <if test="username != null and username != ''">
-        AND name LIKE #{username}
+    <if test="_parameter != null and _parameter != ''">
+        AND name LIKE concat('%',#{username},'%')
     </if>
   </select>
 

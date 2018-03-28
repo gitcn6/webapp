@@ -29,11 +29,12 @@
 					系统管理 <b class="caret"></b>
 				</a>
 				<ul class="dropdown-menu">
-					<li><a href="#" onclick="addContent('/webapp/frm/user/toIndex')">用户管理</a></li>
-					<li><a href="#">角色管理</a></li>
-					<li><a href="#">权限管理</a></li>
-					<li><a href="#">用户角色管理</a></li>
-					<li><a href="#">角色权限管理</a></li>
+					<!-- javascript:void(0);阻止浏览器默认行为 -->
+					<li><a href="javascript:void(0);" onclick="addContent('/webapp/frm/user/toIndex')">用户管理</a></li>
+					<li><a href="javascript:void(0);">角色管理</a></li>
+					<li><a href="javascript:void(0);">权限管理</a></li>
+					<li><a href="javascript:void(0);">用户角色管理</a></li>
+					<li><a href="javascript:void(0);">角色权限管理</a></li>
 				</ul>
 			</li>
 		</ul>

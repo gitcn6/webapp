@@ -32,7 +32,7 @@
   	<property name="filterChainDefinitions">
   		<value>
   			<!-- /frm/init/logout=logout 不需要配置，配置之后不走控制层中的logout方法 -->
-            /frm/init/signin=authc
+            /frm/init/signin=anon
 			/frm/init/login=anon
 			/frm/resource/**=anon
 			/frm/**=authc
@@ -55,7 +55,7 @@
   </bean>
   
   <bean id="sessionIdCookie" class="org.apache.shiro.web.servlet.SimpleCookie">
-  	<constructor-arg value="sid"/>
+  	<constructor-arg name="name" value="sid"/>
   	<!-- -1表示关闭浏览器时过期Cookie -->
   	<property name="maxAge" value="-1"/>
    	<property name="httpOnly" value="true"/>

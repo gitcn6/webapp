@@ -20,7 +20,7 @@ $(function(){
                 field: 'age',
                 title: '年龄'
             },{
-                field:'mail_addr',
+                field:'mailAddr',
                 title:'邮箱'
             },{field:"opera",title:"操作",width:"20%"}],
             url:'/webapp/frm/user/getUsersByName?userName='+userName
