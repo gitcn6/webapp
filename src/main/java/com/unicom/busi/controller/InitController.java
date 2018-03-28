@@ -65,13 +65,6 @@ public class InitController {
 		return "hello";
 	}
 	
-	@RequestMapping("/register")
-	@ResponseBody
-	public String registerUser(@RequestBody SysUser user){
-		us.save(user);
-		return "success";
-	}
-	
 	@RequestMapping(value = "/login",method = RequestMethod.POST)
 	public String login(@RequestParam String username,@RequestParam String password){
 		UsernamePasswordToken token = new UsernamePasswordToken(username, password);
