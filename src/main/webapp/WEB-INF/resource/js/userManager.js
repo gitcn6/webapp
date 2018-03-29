@@ -2,8 +2,19 @@ $(function(){
     //初始化
     initUserData();
 
-    $("#select").click(function(){
+    $("#btn_sel").click(function(){
 
+    });
+    $("#btn_save").click(function(){
+    	$.ajax({
+    		url:"/webapp/frm/user/saveUser",
+    		data:$("#user_form").serialize(),
+    		dataType:"json",
+    		type:"post",
+    		success:function(msg){
+    			alert(msg);
+    		}
+    	})
     });
 
     function initUserData() {

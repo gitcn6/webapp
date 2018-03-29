@@ -13,11 +13,11 @@
 		memoryStoreEvictionPolicy="LRU"/>
 	
 	<cache name="shiro-activeSessionCache"
-		maxElementsInMemory="50"
+		maxElementsInMemory="1000"
 		overflowToDisk="false"     
 		eternal="false"
-		timeToIdleSeconds="60"
-		timeToLiveSeconds="3600"
+		timeToIdleSeconds="3600"
+		timeToLiveSeconds="0"
 		memoryStoreEvictionPolicy="LRU"/>
 	
 	<cache name="userCache"
